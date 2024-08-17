@@ -33,6 +33,17 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    public Book updateBook(String id, Book bookDetails) {
+        Optional<Book> book = getBookById(id);
+        return book.map(b -> {
+            b.setTitle(bookDetails.getTitle());
+            b.setAuthor(bookDetails.getAuthor());
+            b.setPrice(bookDetails.getPrice());
+            return bookRepository.save(b);
+        }).orElse(null);
+    }
+
+    @Override
     public void deleteBook(String id) {
         bookRepository.deleteById(id);
     }
