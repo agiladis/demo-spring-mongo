@@ -2,6 +2,7 @@ package com.example.demospringmongo.controller;
 
 import com.example.demospringmongo.model.Book;
 import com.example.demospringmongo.service.BookService;
+import com.example.demospringmongo.service.CacheService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +15,12 @@ import java.util.List;
 public class BookController {
 
     private final BookService bookService;
+    private final CacheService cacheService;
 
     @Autowired
-    public BookController(BookService bookService) {
+    public BookController(BookService bookService, CacheService cacheService) {
         this.bookService = bookService;
+        this.cacheService = cacheService;
     }
 
     @GetMapping
@@ -27,21 +30,22 @@ public class BookController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Book> getBookById(@PathVariable String id) {
-        return bookService.getBookById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        Book book = cacheService.getBookWithCacheAside(id);
+        return book != null ? ResponseEntity.ok(book) : ResponseEntity.notFound().build();
     }
 
     @PostMapping
     public ResponseEntity<Book> createBook(@RequestBody Book book) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(bookService.saveBook(book));
+        Book savedBook = bookService.saveBook(book);
+        cacheService.updateBookWithCacheAside(savedBook);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedBook);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Book> updateBook(@PathVariable String  id, @RequestBody Book book) {
-        Book updatedBook = bookService.updateBook(id, book);
-
-        return ResponseEntity.ok(updatedBook);
+        book.setId(id);
+        cacheService.updateBookWithCacheAside(book);
+        return ResponseEntity.ok(book);
     }
 
     @DeleteMapping("/{id}")
