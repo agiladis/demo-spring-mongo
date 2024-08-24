@@ -4,6 +4,11 @@ import com.example.demospringmongo.model.Book;
 import com.example.demospringmongo.model.BookDTO;
 
 public class BookMapper {
+
+    private BookMapper() {
+        throw new UnsupportedOperationException("Utility class");
+    }
+
     public static BookDTO toDTO(Book book) {
         BookDTO dto = new BookDTO();
         dto.setId(book.getId());

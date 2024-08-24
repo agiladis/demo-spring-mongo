@@ -15,12 +15,10 @@ import java.util.Optional;
 @Service
 public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
-    private final CacheService cacheService;
 
     @Autowired
-    public BookServiceImpl(BookRepository bookRepository, CacheService cacheService) {
+    public BookServiceImpl(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
-        this.cacheService = cacheService;
     }
 
     @Override
@@ -39,9 +37,7 @@ public class BookServiceImpl implements BookService {
     @Override
     @CachePut(value = "books", key = "#book.id")
     public Book saveBook(Book book) {
-        Book savedBook = bookRepository.save(book);
-//        cacheService.updateBookCache(savedBook);
-        return savedBook;
+        return bookRepository.save(book);
     }
 
     @Override
