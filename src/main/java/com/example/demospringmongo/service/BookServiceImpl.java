@@ -15,10 +15,12 @@ import java.util.Optional;
 @Service
 public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
+    private final CacheService cacheService;
 
     @Autowired
-    public BookServiceImpl(BookRepository bookRepository) {
+    public BookServiceImpl(BookRepository bookRepository, CacheService cacheService) {
         this.bookRepository = bookRepository;
+        this.cacheService = cacheService;
     }
 
     @Override
@@ -37,16 +39,20 @@ public class BookServiceImpl implements BookService {
     @Override
     @CachePut(value = "books", key = "#book.id")
     public Book saveBook(Book book) {
-        return bookRepository.save(book);
+        Book savedBook = bookRepository.save(book);
+        cacheService.updateAllBooksCache(savedBook);
+        return savedBook;
     }
 
     @Override
     @CachePut(value = "books", key = "#id")
     public Book updateBook(String id, Book bookDetails) {
         return bookRepository.findById(id)
-                .map(existingBook -> {
-                    updateBookDetails(existingBook, bookDetails);
-                    return bookRepository.save(existingBook);
+                .map(book -> {
+                    updateBookDetails(book, bookDetails);
+                    Book updatedBook = bookRepository.save(book);
+                    cacheService.updateAllBooksCache(updatedBook);
+                    return updatedBook;
                 }).orElseThrow(() -> new EntityNotFoundException("book not found with id: " + id));
     }
 

@@ -7,7 +7,9 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CacheService {
@@ -21,11 +23,24 @@ public class CacheService {
         this.bookRepository = bookRepository;
     }
 
-    public void updateAllBooksCache() {
-        List<Book> allBooks = bookRepository.findAll();
+    public void updateAllBooksCache(Book savedBook) {
         Cache cache = cacheManager.getCache("books");
         if (cache != null) {
-            cache.put("all", allBooks);
+            List<Book> allBooks = cache.get("all", List.class);
+            if (allBooks != null) {
+                List<Book> updatedBooks = allBooks.stream()
+                        .map(book -> book.getId().equals(savedBook.getId()) ? savedBook : book)
+                        .collect(Collectors.toList());
+
+                if (updatedBooks.stream().noneMatch(book -> book.getId().equals(savedBook.getId()))) {
+                    updatedBooks.add(savedBook);
+                }
+
+                cache.put("all", updatedBooks);
+            } else {
+                allBooks = List.of(savedBook);
+                cache.put("all", allBooks);
+            }
         }
     }
     public void updateBookCache(Book book) {
