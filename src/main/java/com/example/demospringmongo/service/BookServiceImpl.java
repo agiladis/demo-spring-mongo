@@ -63,6 +63,7 @@ public class BookServiceImpl implements BookService {
             throw new EntityNotFoundException("book not found with id: " + id);
         }
         bookRepository.deleteById(id);
+        cacheService.deleteBookCacheFromList(id);
     }
 
     private void updateBookDetails(Book book, Book bookDetails) {
