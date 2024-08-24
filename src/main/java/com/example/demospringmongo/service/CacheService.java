@@ -25,7 +25,7 @@ public class CacheService {
         List<Book> allBooks = bookRepository.findAll();
         Cache cache = cacheManager.getCache("books");
         if (cache != null) {
-            cache.put("allBooks", allBooks);
+            cache.put("all", allBooks);
         }
     }
     public void updateBookCache(Book book) {

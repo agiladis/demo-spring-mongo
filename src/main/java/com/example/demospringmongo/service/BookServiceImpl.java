@@ -15,16 +15,14 @@ import java.util.Optional;
 @Service
 public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
-    private final CacheService cacheService;
 
     @Autowired
-    public BookServiceImpl(BookRepository bookRepository, CacheService cacheService) {
+    public BookServiceImpl(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
-        this.cacheService = cacheService;
     }
 
     @Override
-    @Cacheable(value = "books")
+    @Cacheable(value = "books", key = "'all'")
     public List<Book> getAllBooks() {
         return bookRepository.findAll();
     }
@@ -39,20 +37,16 @@ public class BookServiceImpl implements BookService {
     @Override
     @CachePut(value = "books", key = "#book.id")
     public Book saveBook(Book book) {
-        Book savedBook = bookRepository.save(book);
-//        cacheService.updateBookCache(savedBook);
-        return savedBook;
+        return bookRepository.save(book);
     }
 
     @Override
-    @CacheEvict(value = "books", key = "#id")
+    @CachePut(value = "books", key = "#id")
     public Book updateBook(String id, Book bookDetails) {
         return bookRepository.findById(id)
                 .map(existingBook -> {
                     updateBookDetails(existingBook, bookDetails);
-                    Book updatedBook = bookRepository.save(existingBook);
-                    cacheService.updateBookCache(updatedBook);
-                    return updatedBook;
+                    return bookRepository.save(existingBook);
                 }).orElseThrow(() -> new EntityNotFoundException("book not found with id: " + id));
     }
 
