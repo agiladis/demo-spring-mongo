@@ -24,7 +24,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    @Cacheable(value = "books")
+    @Cacheable(value = "books", key = "'all'")
     public List<Book> getAllBooks() {
         return bookRepository.findAll();
     }
@@ -45,14 +45,12 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    @CacheEvict(value = "books", key = "#id")
+    @CachePut(value = "books", key = "#id")
     public Book updateBook(String id, Book bookDetails) {
         return bookRepository.findById(id)
                 .map(existingBook -> {
                     updateBookDetails(existingBook, bookDetails);
-                    Book updatedBook = bookRepository.save(existingBook);
-                    cacheService.updateBookCache(updatedBook);
-                    return updatedBook;
+                    return bookRepository.save(existingBook);
                 }).orElseThrow(() -> new EntityNotFoundException("book not found with id: " + id));
     }
 
