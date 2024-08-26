@@ -3,6 +3,8 @@ package com.example.demospringmongo.service;
 import com.example.demospringmongo.exception.EntityNotFoundException;
 import com.example.demospringmongo.model.Book;
 import com.example.demospringmongo.repository.BookRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -14,6 +16,8 @@ import java.util.Optional;
 
 @Service
 public class BookServiceImpl implements BookService {
+
+    private static final Logger logger = LoggerFactory.getLogger(BookServiceImpl.class);
     private final BookRepository bookRepository;
     private final CacheService cacheService;
 
@@ -39,6 +43,8 @@ public class BookServiceImpl implements BookService {
     @Override
     @CachePut(value = "books", key = "#book.id")
     public Book saveBook(Book book) {
+        logger.info("Saving a new book with title: {}", book.getTitle());
+
         Book savedBook = bookRepository.save(book);
         cacheService.updateAllBooksCache(savedBook);
         return savedBook;
