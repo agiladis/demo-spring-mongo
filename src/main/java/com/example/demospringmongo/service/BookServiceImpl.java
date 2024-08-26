@@ -65,6 +65,8 @@ public class BookServiceImpl implements BookService {
     @Override
     @CacheEvict(value = "books", key = "#id")
     public void deleteBook(String id) {
+        logger.debug("Attempting to delete book with id: {}", id);
+
         if (!bookRepository.existsById(id)) {
             throw new EntityNotFoundException("book not found with id: " + id);
         }
