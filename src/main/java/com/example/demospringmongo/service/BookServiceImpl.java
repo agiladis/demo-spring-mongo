@@ -17,7 +17,7 @@ import java.util.Optional;
 @Service
 public class BookServiceImpl implements BookService {
 
-    private static final Logger logger = LoggerFactory.getLogger(BookServiceImpl.class);
+//    private static final Logger logger = LoggerFactory.getLogger(BookServiceImpl.class);
     private final BookRepository bookRepository;
     private final CacheService cacheService;
 
@@ -43,7 +43,7 @@ public class BookServiceImpl implements BookService {
     @Override
     @CachePut(value = "books", key = "#book.id")
     public Book saveBook(Book book) {
-        logger.info("Saving a new book with title: {}", book.getTitle());
+//        logger.info("Saving a new book with title: {}", book.getTitle());
 
         Book savedBook = bookRepository.save(book);
         cacheService.updateAllBooksCache(savedBook);
@@ -65,7 +65,7 @@ public class BookServiceImpl implements BookService {
     @Override
     @CacheEvict(value = "books", key = "#id")
     public void deleteBook(String id) {
-        logger.debug("Attempting to delete book with id: {}", id);
+//        logger.debug("Attempting to delete book with id: {}", id);
 
         if (!bookRepository.existsById(id)) {
             throw new EntityNotFoundException("book not found with id: " + id);
