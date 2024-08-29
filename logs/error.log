@@ -81,3 +81,5 @@ com.fasterxml.jackson.databind.exc.MismatchedInputException: Unexpected token (S
 	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
 	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
+2024-08-29 22:23:12 [http-nio-8080-exec-2] ERROR c.e.d.controller.BookController - Deleting book with ID: 66d09064ac738e36ec7fe6ee
+2024-08-29 22:25:18 [http-nio-8080-exec-2] ERROR c.e.d.controller.BookController - Deleting book with ID: 66d0926929f5374e17bfa5b2
