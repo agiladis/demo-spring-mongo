@@ -33,9 +33,6 @@ public class CacheService {
                 }
 
                 cache.put("all", updatedBooks);
-            } else {
-                allBooks = List.of(savedBook);
-                cache.put("all", allBooks);
             }
         }
     }
